@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -68,5 +69,11 @@ public class Dungeon_Manager{
             if (!(config.contains("Dungeons."+ dungeonName))) return false;
             config.set("Dungeons."+ dungeonName + ".minlevel", level);
             return true;
+    }
+
+    public boolean SetItem(String dungeonName, ItemStack item, FileConfiguration config){
+        if (!(config.contains("Dungeons."+ dungeonName))) return false;
+        config.set("Dungeons."+ dungeonName + ".item", item);
+        return true;
     }
 }
