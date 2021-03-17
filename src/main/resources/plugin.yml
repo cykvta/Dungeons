@@ -1,0 +1,7 @@
+name: Dungeons
+version: ${project.version}
+main: cykuta.dungeons.Dungeons
+api-version: 1.16
+commands:
+  dungeon:
+    description: dungeons plugin main command
