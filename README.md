@@ -1,7 +1,7 @@
 # Dungeons
 Plugin to create dungeons which allows to set a minimum level to teleport to it.
 
-Level Plugin: ![Levels](https://www.spigotmc.org/resources/levels-mysql-support-nametagedit-support.45772/)
+Level Plugin: [Levels](https://www.spigotmc.org/resources/levels-mysql-support-nametagedit-support.45772/)
 
 ## Commands
 /dungeon create <id> //Create new dungeon
