@@ -1,16 +1,13 @@
 package cykuta.dungeons.helpers;
 
-import cykuta.dungeons.Dungeons;
 import cykuta.dungeons.utils.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.Set;
 
 public class Dungeon_Manager{
 
@@ -71,9 +68,12 @@ public class Dungeon_Manager{
             return true;
     }
 
-    public boolean SetItem(String dungeonName, ItemStack item, FileConfiguration config){
-        if (!(config.contains("Dungeons."+ dungeonName))) return false;
-        config.set("Dungeons."+ dungeonName + ".item", item);
-        return true;
+    public String[] GetList(FileConfiguration config){
+        Set<String> path = config.getConfigurationSection("Dungeons").getKeys(false);
+        return path.toString()
+                .replace("[", "")
+                .replace("]", "")
+                .replace(" ", "")
+                .split(",");
     }
 }

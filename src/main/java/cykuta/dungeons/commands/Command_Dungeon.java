@@ -3,17 +3,20 @@ package cykuta.dungeons.commands;
 import cykuta.dungeons.Dungeons;
 import cykuta.dungeons.helpers.Dungeon_Manager;
 import cykuta.dungeons.utils.Chat;
-import org.bukkit.Material;
+import level.plugin.PlayerData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+
 
 public class Command_Dungeon implements CommandExecutor {
     public Dungeons plugin;
+
     public Command_Dungeon(Dungeons plugin) {
         this.plugin = plugin;
     };
@@ -24,12 +27,13 @@ public class Command_Dungeon implements CommandExecutor {
         if (args.length == 0){
             sender.sendMessage(Chat.color("&d&lDungeons &7--------------------------"));
             sender.sendMessage(Chat.color("&e/dungeon create <id> &7//Create new dungeon"));
+            sender.sendMessage(Chat.color("&e/dungeon list &7//View all dungeons"));
             sender.sendMessage(Chat.color("&e/dungeon remove <id> &7//Remove dungeon"));
             sender.sendMessage(Chat.color("&e/dungeon tp <id>  &7//Teleport to dungeon"));
             sender.sendMessage(Chat.color("&e/dungeon setlevel <id> <level> &7//Set minimum level to enter the dungeon"));
             sender.sendMessage(Chat.color("&e/dungeon settitle <id> <title> &7//All '_' replaced with spaces "));
-            sender.sendMessage(Chat.color("&e/dungeon seticon <id> &7//Set item in your main hand as a icon in GUI"));
             sender.sendMessage(Chat.color("&e/dungeon reload &7//Reload plugin config"));
+            sender.sendMessage(Chat.color("&7//Cykuta"));
             sender.sendMessage(Chat.color("&7------------------------------------"));
             return true;
         }
@@ -64,13 +68,25 @@ public class Command_Dungeon implements CommandExecutor {
                 break;
 
             case "tp":
-                if (!creator.TeleportDungeon(player, args[1], config)){
-                    player.sendMessage(
-                            Chat.color(Chat.prefix + "&cError, dungeon "+args[1]+" not exist."));
-                    break;
-                }
-                player.sendMessage(
-                        Chat.color(Chat.prefix + args[1]+" Successfully teleported."));
+                    if (config.contains("Dungeons."+ args[1] + ".minlevel")){
+                        int need_level = config.getInt("Dungeons."+ args[1] + ".minlevel");
+                        int current_level = new PlayerData(player).getLevel();
+                        if (current_level >= need_level){
+                            creator.TeleportDungeon(player, args[1], config);
+                            break;
+                        }
+                        player.sendMessage(
+                                Chat.color("&cNo tienes nivel suficiente para ir a esta dungeon."));
+                        break;
+
+                    }else {
+                        boolean is = creator.TeleportDungeon(player, args[1], config);
+                        if (!is){
+                            player.sendMessage(
+                                    Chat.color(Chat.prefix + "&cError, dungeon "+args[1]+" not exist."));
+                            break;
+                        }
+                    }
                 break;
 
             case "settitle":
@@ -88,6 +104,7 @@ public class Command_Dungeon implements CommandExecutor {
                     player.sendMessage(
                             Chat.color(Chat.prefix + "&cError, cant set title on "+args[1]+"."));
                 }
+                break;
 
             case "setlevel":
                 try {
@@ -107,22 +124,24 @@ public class Command_Dungeon implements CommandExecutor {
                             Chat.color(Chat.prefix + "&cError, cant set level on "+args[1]+"."));
                     break;
                 }
-            case "seticon":
-                ItemStack item = player.getInventory().getItemInMainHand();
-                if (item.getType() != Material.AIR && creator.SetItem(args[1], item, config)){
-                    player.sendMessage(
-                            Chat.color(Chat.prefix +args[1]+" Item was set successfully."));
-                    plugin.saveConfig();
-                    break;
-                }
-                player.sendMessage(
-                        Chat.color(Chat.prefix + "&cError, cant set item on "+args[1]+"."));
-                break;
+
             case "reload":
                 player.sendMessage(
                         Chat.color(Chat.prefix + "Plugin was set successfully relaoded."));
                 plugin.reloadConfig();
+                break;
+
+            case "list":
+                String[] msg = creator.GetList(config);
+                player.sendMessage(
+                        Chat.color(Chat.prefix + "&eList:"));
+                player.sendMessage(
+                        Chat.color("&7"+ Arrays.toString(msg)));
+                plugin.saveConfig();
+                break;
+
         }
+
         return true;
     }
 }
